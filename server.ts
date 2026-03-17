@@ -401,6 +401,34 @@ async function startServer() {
     res.json(stats);
   });
 
+  app.post("/api/analyze", async (req, res) => {
+    const { rawText } = req.body;
+
+    if (!rawText) {
+      return res.status(400).json({ error: "Missing rawText" });
+    }
+
+    try {
+      console.log("Starting AI analysis on backend...");
+
+      const result = await aiService.analyzeCorpus([
+        { raw_text: rawText }
+      ]);
+
+      if (!result) {
+        throw new Error("Analysis failed");
+      }
+
+      res.json(result);
+    } catch (e: any) {
+      console.error("AI analysis failed:", e);
+      res.status(500).json({
+        error: "AI analysis failed",
+        details: e.message
+      });
+    }
+  });
+  
   app.post("/api/import-share-link", async (req, res) => {
     const { url } = req.body;
     if (!url || !url.includes("chatgpt.com/share")) {
