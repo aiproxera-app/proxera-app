@@ -139,15 +139,25 @@ export default function ImportModal({ onClose, onSuccess }: ImportModalProps) {
 
       setLoadingMessage("Rebuilding behavioral profile...");
 
-      // 3. Fetch all conversations for full analysis
-      const convsRes = await apiFetch("/api/conversations");
-      const conversations = await convsRes.json();
+      // 3. Run full corpus analysis on frontend
+      const analyzeRes = await apiFetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rawText: contentToAnalyze,
+        }),
+      });
 
-      // 4. Run full corpus analysis on frontend
-      const result = await aiService.analyzeCorpus(conversations);
+      if (!analyzeRes.ok) {
+        const err = await analyzeRes.json();
+        throw new Error(err.details || err.error || "Analysis failed");
+      }
+
+      const result = await analyzeRes.json();
+
       if (!result) throw new Error("Analysis failed to produce a profile");
 
-      // 5. Update profile on backend
+      // 4. Update profile on backend
       setLoadingMessage("Updating profile...");
       const updateRes = await apiFetch("/api/update-profile", {
         method: "POST",
@@ -193,7 +203,7 @@ export default function ImportModal({ onClose, onSuccess }: ImportModalProps) {
         });
       }
 
-      // 6. Fetch updated stats
+      // 5. Fetch updated stats
       const statsRes = await apiFetch("/api/corpus-stats");
       const stats = await statsRes.json();
       setCorpusStats(stats);
