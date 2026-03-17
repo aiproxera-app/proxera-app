@@ -680,7 +680,7 @@ async function startServer() {
   });
 
   // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV === "development") {
     console.log("Initializing Vite middleware...");
     const vite = await createViteServer({
       server: { middlewareMode: true },
