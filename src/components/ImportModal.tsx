@@ -114,9 +114,7 @@ export default function ImportModal({ onClose, onSuccess }: ImportModalProps) {
 
       // 1. Extract metadata on frontend
       setLoadingMessage("Extracting conversation metadata...");
-      const processed = aiService.preprocessConversation(contentToAnalyze);
-      const textForMeta = processed.map((m: any) => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
-      const metadata = await aiService.extractConversationMetadata(textForMeta.substring(0, 10000));
+      const metadata = {};
 
       // 2. Save to corpus with metadata
       setLoadingMessage("Saving to corpus...");
