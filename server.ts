@@ -22,21 +22,13 @@ async function startServer() {
 
   // Auth Middleware Mock (for MVP simplicity)
   const getUserId = (req: express.Request) => {
-    const userId = req.headers['x-user-id'] as string || "1";
-    
-    // Ensure user exists in DB for this dev session
-    const user = getDb().prepare("SELECT id FROM users WHERE id = ?").get(userId);
-    if (!user) {
-      console.log(`Creating new dev user: ${userId}`);
-        getDb().prepare("INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)").run(
-          userId,
-          `User ${userId.slice(0, 4)}`,
-          `user_${userId.slice(0, 8)}@proxera.dev`,
-          "dev-placeholder-hash"
-        );
+    const userId = req.headers["x-user-id"] as string;
+  
+    if (!userId) {
+      throw new Error("Unauthorized");
     }
-    
-    return userId; 
+  
+    return userId;
   };
 
   // API Routes
