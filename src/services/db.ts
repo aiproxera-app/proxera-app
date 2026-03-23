@@ -75,7 +75,7 @@ export function initDb() {
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         email TEXT UNIQUE,
-        password TEXT,
+        password_hash TEXT NOT NULL,
         name TEXT,
         headline TEXT,
         location TEXT,
