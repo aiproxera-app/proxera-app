@@ -45,13 +45,26 @@ async function startServer() {
     res.json(user || null);
   });
 
-  app.post("/api/register", (req, res) => {
+  app.post("/api/register", async (req, res) => {
     const { email, password, name } = req.body;
+  
+    if (!email || !password) {
+      return res.status(400).json({ error: "Missing email or password" });
+    }
+  
     try {
-      const info = getDb().prepare("INSERT INTO users (email, password, name) VALUES (?, ?, ?)").run(email, password, name);
-      res.json({ id: info.lastInsertRowid });
+      const password_hash = Buffer.from(password).toString("base64");
+      const userId = crypto.randomUUID();
+  
+      getDb().prepare(`
+        INSERT INTO users (id, email, password_hash, name)
+        VALUES (?, ?, ?, ?)
+      `).run(userId, email, password_hash, name || null);
+  
+      res.json({ success: true, userId });
     } catch (e) {
-      res.status(400).json({ error: "Email already exists" });
+      console.error(e);
+      res.status(500).json({ error: "Registration failed" });
     }
   });
 
