@@ -28,11 +28,12 @@ async function startServer() {
     const user = getDb().prepare("SELECT id FROM users WHERE id = ?").get(userId);
     if (!user) {
       console.log(`Creating new dev user: ${userId}`);
-      getDb().prepare("INSERT INTO users (id, name, email) VALUES (?, ?, ?)").run(
-        userId, 
-        `User ${userId.slice(0, 4)}`, 
-        `user_${userId.slice(0, 8)}@proxera.dev`
-      );
+        getDb().prepare("INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)").run(
+          userId,
+          `User ${userId.slice(0, 4)}`,
+          `user_${userId.slice(0, 8)}@proxera.dev`,
+          "dev-placeholder-hash"
+        );
     }
     
     return userId; 
