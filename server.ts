@@ -69,6 +69,29 @@ async function startServer() {
     }
   });
 
+  app.post("/api/login", (req, res) => {
+    const { email, password } = req.body;
+  
+    const user = getDb().prepare(`
+      SELECT * FROM users WHERE email = ?
+    `).get(email) as any;
+  
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+  
+    const password_hash = Buffer.from(password).toString("base64");
+  
+    if (user.password_hash !== password_hash) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+  
+    res.json({
+      success: true,
+      userId: user.id
+    });
+  });
+  
   app.get("/api/messages", (req, res) => {
     const userId = getUserId(req);
     const messages = getDb().prepare("SELECT * FROM messages WHERE user_id = ? ORDER BY created_at ASC").all(userId);
