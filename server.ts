@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { initDb, getDb } from "./src/services/db.ts";
 import * as aiService from "./src/services/ai.ts";
+import crypto from "crypto";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
