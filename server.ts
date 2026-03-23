@@ -33,9 +33,13 @@ async function startServer() {
 
   // API Routes
   app.get("/api/me", (req, res) => {
-    const userId = getUserId(req);
-    const user = getDb().prepare("SELECT * FROM users WHERE id = ?").get(userId);
-    res.json(user || null);
+    try {
+      const userId = getUserId(req);
+      const user = getDb().prepare("SELECT * FROM users WHERE id = ?").get(userId);
+      res.json(user || null);
+    } catch (e) {
+      res.status(401).json({ error: "Unauthorized" });
+    }
   });
 
   app.post("/api/register", async (req, res) => {
